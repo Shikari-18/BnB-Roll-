@@ -1,0 +1,3407 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BnB Rolls - Fine Bakery</title>
+    <!-- Base64 encoded favicon to ensure it works on GitHub Pages -->
+    <link rel="icon" href="images/logo.jpg" />
+    <style>
+      /* Welcome Animation Styles */
+      .welcome-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #78350f, #92400e);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10001;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+        opacity: 1;
+        transition: opacity 1s ease-out;
+      }
+
+      .welcome-animation.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .welcome-logo {
+        font-size: 5rem;
+        margin-bottom: 2rem;
+        animation: bounce 2s infinite;
+      }
+
+      .welcome-text {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        animation: fadeIn 2s;
+      }
+
+      .welcome-subtext {
+        font-size: 1.2rem;
+        animation: fadeIn 3s;
+      }
+
+      @keyframes bounce {
+        0%,
+        20%,
+        50%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-30px);
+        }
+        60% {
+          transform: translateY(-15px);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      /* Existing styles remain the same, adding new closed page styles */
+
+      /* Closed Page Styles */
+      .closed-page {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #78350f, #92400e);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        color: white;
+        text-align: center;
+        padding: 2rem;
+      }
+
+      .closed-content {
+        max-width: 600px;
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 3rem;
+        border-radius: 1.5rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      }
+
+      .closed-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .closed-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .closed-text {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .closed-countdown {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .closed-countdown-item {
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        min-width: 80px;
+      }
+
+      .closed-countdown-value {
+        font-size: 2rem;
+        font-weight: bold;
+        display: block;
+      }
+
+      .closed-countdown-label {
+        font-size: 0.9rem;
+        display: block;
+        margin-top: 0.25rem;
+      }
+
+      .closed-note {
+        font-size: 0.9rem;
+        opacity: 0.8;
+        margin-top: 2rem;
+      }
+
+      /* Hide closed page when not needed */
+      .closed-page.hidden {
+        display: none;
+      }
+
+      /* Existing styles remain unchanged */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: Georgia, serif;
+        background-color: #fef3e2;
+        color: #78350f;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        overflow-x: hidden;
+      }
+
+      /* Disable text selection */
+      * {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+
+      /* Navigation */
+      nav {
+        background-color: #d97706;
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .nav-brand {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: white;
+        letter-spacing: 2px;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 2rem;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: white;
+        text-decoration: none;
+        font-size: 1.1rem;
+        transition: opacity 0.3s;
+        position: relative;
+      }
+
+      .nav-links a:hover {
+        opacity: 0.8;
+      }
+
+      .nav-links a::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -5px;
+        left: 0;
+        background-color: white;
+        transition: width 0.3s;
+      }
+
+      .nav-links a:hover::after {
+        width: 100%;
+      }
+
+      /* Fixed Cart Icon - Hidden on home page by default */
+      .cart-icon {
+        position: fixed;
+        z-index: 1000;
+        background-color: #d97706;
+        padding: 10px;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        transition: transform 0.3s, background-color 0.3s;
+        user-select: none;
+        top: 85px;
+        left: 20px;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        display: none; /* Hidden by default */
+      }
+
+      .cart-icon:hover {
+        transform: scale(1.1);
+        background-color: #b45309;
+      }
+
+      .cart-count {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: #7c2d12;
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+      }
+
+      /* Added to cart notification */
+      .added-notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #10b981;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 24px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1001;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+      }
+
+      .added-notification.show {
+        opacity: 1;
+      }
+
+      /* Pages */
+      .page {
+        display: none;
+      }
+
+      .page.active {
+        display: block;
+      }
+
+      /* Home Page */
+      .hero {
+        background: linear-gradient(
+            135deg,
+            rgba(253, 230, 138, 0.9),
+            rgba(254, 243, 226, 0.9)
+          ),
+          url("https://images.unsplash.com/photo-1509440159596-0249088772ff?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1772&q=80");
+        background-size: cover;
+        background-position: center;
+        padding: 8rem 2rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero-content {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 2;
+      }
+
+      .logo-text {
+        font-size: 4.5rem;
+        color: #92400e;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.1em;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        font-weight: bold;
+      }
+
+      .subtitle {
+        font-size: 1.8rem;
+        color: #b45309;
+        letter-spacing: 0.3em;
+        margin-bottom: 2rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        font-weight: 300;
+      }
+
+      .hero p {
+        font-size: 1.3rem;
+        color: #92400e;
+        margin-bottom: 3rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        line-height: 1.6;
+      }
+
+      .btn-primary {
+        background-color: #92400e;
+        color: white;
+        padding: 1.2rem 2.5rem;
+        border: none;
+        border-radius: 2rem;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(146, 64, 14, 0.3);
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+
+      .btn-primary:hover {
+        background-color: #78350f;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(146, 64, 14, 0.4);
+      }
+
+      .floating-element {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background: rgba(253, 230, 138, 0.7);
+        border-radius: 50%;
+        animation: float 6s ease-in-out infinite;
+        z-index: 1;
+      }
+
+      .floating-element:nth-child(1) {
+        top: 10%;
+        left: 10%;
+        width: 80px;
+        height: 80px;
+        animation-delay: 0s;
+      }
+
+      .floating-element:nth-child(2) {
+        top: 20%;
+        right: 15%;
+        width: 60px;
+        height: 60px;
+        animation-delay: 2s;
+      }
+
+      .floating-element:nth-child(3) {
+        bottom: 15%;
+        left: 15%;
+        width: 70px;
+        height: 70px;
+        animation-delay: 4s;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0) rotate(0deg);
+        }
+        50% {
+          transform: translateY(-20px) rotate(180deg);
+        }
+        100% {
+          transform: translateY(0) rotate(360deg);
+        }
+      }
+
+      .about-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 6rem 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+      }
+
+      .about-text h2 {
+        font-size: 2.8rem;
+        color: #92400e;
+        margin-bottom: 1.5rem;
+        position: relative;
+      }
+
+      .about-text h2::after {
+        content: "";
+        position: absolute;
+        width: 80px;
+        height: 4px;
+        background-color: #d97706;
+        bottom: -10px;
+        left: 0;
+        border-radius: 2px;
+      }
+
+      .about-text p {
+        line-height: 1.8;
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        color: #78350f;
+      }
+
+      .about-card {
+        background-color: #fde68a;
+        padding: 3rem 2rem;
+        border-radius: 1.5rem;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .about-card:hover {
+        transform: translateY(-10px);
+      }
+
+      .about-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, #d97706, #fbbf24);
+      }
+
+      .about-card-icon {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .features {
+        background-color: #fde68a;
+        padding: 6rem 2rem;
+        position: relative;
+      }
+
+      .features::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("https://images.unsplash.com/photo-1555507039-293a2d7c5a1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80");
+        background-size: cover;
+        background-position: center;
+        opacity: 0.1;
+      }
+
+      .features-content {
+        position: relative;
+        z-index: 1;
+      }
+
+      .section-title {
+        text-align: center;
+        font-size: 2.8rem;
+        color: #92400e;
+        margin-bottom: 3rem;
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        width: 100px;
+        height: 4px;
+        background-color: #d97706;
+        bottom: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 2px;
+      }
+
+      .features-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2.5rem;
+      }
+
+      .feature-card {
+        background-color: white;
+        padding: 2.5rem 2rem;
+        border-radius: 1.5rem;
+        text-align: center;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      }
+
+      .feature-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(to right, #d97706, #fbbf24);
+      }
+
+      .feature-icon {
+        font-size: 3.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .feature-card h3 {
+        font-size: 1.6rem;
+        color: #92400e;
+        margin-bottom: 1rem;
+      }
+
+      .feature-card p {
+        color: #b45309;
+        line-height: 1.6;
+      }
+
+      .testimonials {
+        padding: 6rem 2rem;
+        background-color: #fef3e2;
+      }
+
+      .testimonials-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+      }
+
+      .testimonial-card {
+        background-color: white;
+        padding: 2.5rem 2rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
+
+      .testimonial-text {
+        font-style: italic;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        color: #78350f;
+      }
+
+      .testimonial-author {
+        font-weight: bold;
+        color: #92400e;
+      }
+
+      .cta-section {
+        background: linear-gradient(135deg, #d97706, #fbbf24);
+        padding: 6rem 2rem;
+        text-align: center;
+        color: white;
+      }
+
+      .cta-content {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .cta-title {
+        font-size: 2.8rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .cta-text {
+        font-size: 1.2rem;
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+      }
+
+      .btn-secondary {
+        background-color: white;
+        color: #d97706;
+        padding: 1.2rem 2.5rem;
+        border: none;
+        border-radius: 2rem;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+
+      .btn-secondary:hover {
+        background-color: #fef3e2;
+        transform: translateY(-3px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+      }
+
+      /* Menu Page */
+      .menu-header {
+        text-align: center;
+        padding: 5rem 2rem 3rem;
+        background: linear-gradient(135deg, #fde68a, #fef3e2);
+      }
+
+      .menu-header h1 {
+        font-size: 3.5rem;
+        color: #92400e;
+        margin-bottom: 1rem;
+      }
+
+      .menu-categories {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .menu-category-btn {
+        background-color: white;
+        color: #92400e;
+        padding: 0.8rem 1.5rem;
+        border: 2px solid #d97706;
+        border-radius: 2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: bold;
+      }
+
+      .menu-category-btn.active {
+        background-color: #d97706;
+        color: white;
+      }
+
+      .menu-category-btn:hover {
+        background-color: #fde68a;
+      }
+
+      .products-grid {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 0 2rem 4rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .product-card {
+        background-color: white;
+        border-radius: 1rem;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+        max-width: 100%;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.6s, transform 0.6s;
+      }
+
+      .product-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      .product-image {
+        background: linear-gradient(135deg, #fde68a, #fbbf24);
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .product-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+
+      .product-info {
+        padding: 1.2rem;
+      }
+
+      .product-info h3 {
+        font-size: 1.2rem;
+        color: #92400e;
+        margin-bottom: 0.5rem;
+      }
+
+      .product-info p {
+        color: #b45309;
+        font-size: 0.85rem;
+        margin-bottom: 1rem;
+        line-height: 1.4;
+      }
+
+      .product-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .product-price {
+        font-size: 1.2rem;
+        color: #92400e;
+        font-weight: bold;
+      }
+
+      .btn-add {
+        background-color: #92400e;
+        color: white;
+        padding: 0.5rem 1.2rem;
+        border: none;
+        border-radius: 2rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-size: 0.9rem;
+        white-space: nowrap;
+      }
+
+      .btn-add:hover {
+        background-color: #78350f;
+      }
+
+      /* Cart Page */
+      .cart-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 5rem 2rem 3rem;
+      }
+
+      .cart-container h1 {
+        font-size: 3rem;
+        color: #92400e;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .cart-empty {
+        background-color: white;
+        padding: 4rem 2rem;
+        border-radius: 1rem;
+        text-align: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .cart-empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+
+      .cart-items {
+        background-color: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .cart-item {
+        display: grid;
+        grid-template-columns: 80px 1fr auto;
+        gap: 1.5rem;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid #fde68a;
+        align-items: center;
+      }
+
+      .cart-item:last-child {
+        border-bottom: none;
+      }
+
+      .cart-item-image {
+        background: linear-gradient(135deg, #fde68a, #fbbf24);
+        width: 80px;
+        height: 80px;
+        border-radius: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .cart-item-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .cart-item-details h3 {
+        color: #92400e;
+        margin-bottom: 0.25rem;
+      }
+
+      .cart-item-price {
+        color: #b45309;
+      }
+
+      .cart-item-controls {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+      }
+
+      .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .btn-qty {
+        background-color: #fde68a;
+        color: #92400e;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-weight: bold;
+        transition: background-color 0.3s;
+      }
+
+      .btn-qty:hover {
+        background-color: #fbbf24;
+      }
+
+      .quantity {
+        font-weight: bold;
+        min-width: 30px;
+        text-align: center;
+      }
+
+      .btn-remove {
+        color: #dc2626;
+        background: none;
+        border: none;
+        cursor: pointer;
+        text-decoration: underline;
+        font-size: 0.9rem;
+      }
+
+      .cart-total {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #92400e;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .cart-total h2 {
+        font-size: 1.8rem;
+        color: #92400e;
+      }
+
+      /* Party Box Flavor Selection */
+      .flavor-selection {
+        margin-top: 1rem;
+        padding: 1rem;
+        background-color: #fef3e2;
+        border-radius: 0.5rem;
+      }
+
+      .flavor-selection h4 {
+        color: #92400e;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+      }
+
+      .flavor-options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+      }
+
+      .flavor-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .flavor-option input {
+        margin: 0;
+      }
+
+      .flavor-option label {
+        font-size: 0.85rem;
+        color: #78350f;
+      }
+
+      /* Checkout Page */
+      .checkout-container {
+        max-width: 700px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+      }
+
+      .checkout-container h1 {
+        font-size: 2.5rem;
+        color: #92400e;
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .btn-checkout {
+        background-color: #92400e;
+        color: white;
+        padding: 0.8rem 2rem;
+        border: none;
+        border-radius: 1rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        width: auto;
+        margin-top: 1rem;
+        max-width: 200px;
+      }
+
+      .btn-checkout:hover {
+        background-color: #78350f;
+      }
+
+      /* Discount Display */
+      .discount-info {
+        background-color: #d1fae5;
+        color: #065f46;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        text-align: center;
+        border: 1px solid #a7f3d0;
+      }
+
+      .discount-amount {
+        font-weight: bold;
+      }
+
+      /* Price Display Styles */
+      .price-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .original-price {
+        font-size: 1rem;
+        color: #b45309;
+        text-decoration: line-through;
+        margin-bottom: 0.25rem;
+      }
+
+      .discounted-price {
+        font-size: 1.2rem;
+        color: #92400e;
+        font-weight: bold;
+      }
+
+      .normal-price {
+        font-size: 1.2rem;
+        color: #92400e;
+        font-weight: bold;
+      }
+
+      .discount-badge {
+        background-color: #10b981;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+      }
+
+      /* Order Confirmation Page */
+      .confirmation-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 5rem 2rem;
+        text-align: center;
+        background-color: white;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .confirmation-icon {
+        font-size: 5rem;
+        margin-bottom: 2rem;
+        color: #10b981;
+      }
+
+      .confirmation-title {
+        font-size: 2.5rem;
+        color: #92400e;
+        margin-bottom: 1.5rem;
+      }
+
+      .confirmation-text {
+        font-size: 1.2rem;
+        color: #78350f;
+        line-height: 1.6;
+        margin-bottom: 2.5rem;
+      }
+
+      .confirmation-details {
+        background-color: #fef3e2;
+        padding: 2rem;
+        border-radius: 1rem;
+        text-align: left;
+        margin-bottom: 2.5rem;
+        display: none;
+      }
+
+      .confirmation-details h3 {
+        color: #92400e;
+        margin-bottom: 1rem;
+        font-size: 1.3rem;
+      }
+
+      .confirmation-details p {
+        margin-bottom: 0.5rem;
+        color: #78350f;
+      }
+
+      .btn-continue {
+        background-color: #d97706;
+        color: white;
+        padding: 1rem 2.5rem;
+        border: none;
+        border-radius: 2rem;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .btn-continue:hover {
+        background-color: #b45309;
+      }
+
+      /* Contact Form */
+      .contact-form {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-top: 2rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #92400e;
+        font-weight: bold;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #fde68a;
+        border-radius: 0.5rem;
+        font-family: inherit;
+        font-size: 1rem;
+      }
+
+      .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+      }
+
+      /* Preorder Section */
+      .preorder-section {
+        background-color: #fde68a;
+        padding: 4rem 2rem;
+        text-align: center;
+        margin-top: 2rem;
+      }
+
+      .preorder-card {
+        background-color: white;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .preorder-title {
+        font-size: 2.2rem;
+        color: #92400e;
+        margin-bottom: 1rem;
+      }
+
+      .preorder-text {
+        color: #78350f;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+      }
+
+      .countdown {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .countdown-item {
+        background-color: #92400e;
+        color: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        min-width: 70px;
+      }
+
+      .countdown-value {
+        font-size: 1.8rem;
+        font-weight: bold;
+        display: block;
+      }
+
+      .countdown-label {
+        font-size: 0.8rem;
+        display: block;
+        margin-top: 0.25rem;
+      }
+
+      .btn-preorder {
+        background-color: #d97706;
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 2rem;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        font-weight: bold;
+      }
+
+      .btn-preorder:hover {
+        background-color: #b45309;
+      }
+
+      /* Review Section */
+      .review-section {
+        padding: 6rem 2rem;
+        background-color: #fef3e2;
+      }
+
+      .review-container {
+        max-width: 800px;
+        margin: 0 auto;
+        background-color: white;
+        border-radius: 1.5rem;
+        padding: 3rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      }
+
+      .review-title {
+        text-align: center;
+        font-size: 2.5rem;
+        color: #92400e;
+        margin-bottom: 2rem;
+      }
+
+      .review-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .form-row label {
+        color: #92400e;
+        font-weight: bold;
+      }
+
+      .food-select {
+        padding: 0.75rem;
+        border: 1px solid #fde68a;
+        border-radius: 0.5rem;
+        font-family: inherit;
+        font-size: 1rem;
+        background-color: white;
+      }
+
+      .star-rating {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: center;
+        margin: 1rem 0;
+      }
+
+      .star {
+        font-size: 2.5rem;
+        color: #fde68a;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+
+      .star.active {
+        color: #fbbf24;
+      }
+
+      .rating-text {
+        text-align: center;
+        color: #92400e;
+        margin-bottom: 1rem;
+        font-weight: bold;
+      }
+
+      .feedback-options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .feedback-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .feedback-option input {
+        margin: 0;
+      }
+
+      .feedback-option label {
+        font-size: 0.9rem;
+        color: #78350f;
+        font-weight: normal;
+      }
+
+      .other-feedback {
+        margin-top: 1rem;
+      }
+
+      .other-feedback textarea {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #fde68a;
+        border-radius: 0.5rem;
+        font-family: inherit;
+        font-size: 1rem;
+        resize: vertical;
+        min-height: 80px;
+      }
+
+      .btn-submit-review {
+        background-color: #92400e;
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 2rem;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 1rem;
+        font-weight: bold;
+      }
+
+      .btn-submit-review:hover {
+        background-color: #78350f;
+      }
+
+      /* Review Success Modal */
+      .review-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s;
+      }
+
+      .review-modal.active {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .modal-content {
+        background-color: white;
+        border-radius: 1.5rem;
+        padding: 3rem;
+        text-align: center;
+        max-width: 500px;
+        width: 90%;
+        position: relative;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      .modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #92400e;
+        cursor: pointer;
+      }
+
+      .modal-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        color: #10b981;
+      }
+
+      .modal-title {
+        font-size: 2rem;
+        color: #92400e;
+        margin-bottom: 1rem;
+      }
+
+      .modal-text {
+        color: #78350f;
+        line-height: 1.6;
+        margin-bottom: 2rem;
+      }
+
+      /* Restaurant Carties Special Offer */
+      .special-offer-badge {
+        background-color: #dc2626;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.8rem;
+        margin-left: 0.5rem;
+        font-weight: bold;
+      }
+
+      .offer-note {
+        background-color: #fef3e2;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+        border-left: 4px solid #d97706;
+        font-size: 0.9rem;
+        color: #78350f;
+      }
+
+      @media (max-width: 768px) {
+        .about-section {
+          grid-template-columns: 1fr;
+        }
+
+        .features-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .testimonials-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .logo-text {
+          font-size: 3rem;
+        }
+
+        .subtitle {
+          font-size: 1.4rem;
+        }
+
+        .cart-item {
+          grid-template-columns: 60px 1fr;
+        }
+
+        .cart-item-controls {
+          grid-column: 2;
+        }
+
+        .products-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+
+        .product-card {
+          max-width: 100%;
+        }
+
+        .product-image {
+          height: 120px;
+        }
+
+        .product-info {
+          padding: 1rem;
+        }
+
+        .product-info h3 {
+          font-size: 1.1rem;
+        }
+
+        .product-info p {
+          font-size: 0.8rem;
+        }
+
+        .product-footer {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+
+        .btn-add {
+          width: 100%;
+          padding: 0.5rem;
+          border-radius: 0.5rem;
+        }
+
+        .cart-icon {
+          padding: 14px;
+          top: 75px;
+          left: 15px;
+        }
+
+        .countdown {
+          gap: 0.5rem;
+        }
+
+        .countdown-item {
+          min-width: 60px;
+          padding: 0.75rem;
+        }
+
+        .countdown-value {
+          font-size: 1.5rem;
+        }
+
+        .flavor-options {
+          grid-template-columns: 1fr;
+        }
+
+        .review-container {
+          padding: 2rem;
+        }
+
+        .feedback-options {
+          grid-template-columns: 1fr;
+        }
+
+        .star {
+          font-size: 2rem;
+        }
+
+        /* Welcome animation responsive */
+        .welcome-text {
+          font-size: 2rem;
+        }
+
+        .welcome-subtext {
+          font-size: 1rem;
+        }
+
+        /* Closed page responsive */
+        .closed-content {
+          padding: 2rem;
+        }
+
+        .closed-title {
+          font-size: 2rem;
+        }
+
+        .closed-countdown {
+          gap: 0.5rem;
+        }
+
+        .closed-countdown-item {
+          min-width: 60px;
+          padding: 0.75rem;
+        }
+
+        .closed-countdown-value {
+          font-size: 1.5rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .products-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .product-footer {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.5rem;
+        }
+
+        .btn-add {
+          width: 100%;
+          padding: 0.5rem;
+          border-radius: 0.5rem;
+        }
+
+        .cart-icon {
+          padding: 16px;
+          top: 75px;
+          left: 10px;
+        }
+
+        .countdown {
+          flex-wrap: wrap;
+        }
+
+        /* Welcome animation responsive */
+        .welcome-logo {
+          font-size: 3rem;
+        }
+
+        .welcome-text {
+          font-size: 1.5rem;
+        }
+
+        /* Closed page responsive */
+        .closed-countdown {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body oncontextmenu="return false;">
+    <!-- Welcome Animation -->
+    <div class="welcome-animation" id="welcomeAnimation">
+      <div class="welcome-logo">🥐</div>
+      <div class="welcome-text">Welcome to BnB Rolls</div>
+      <div class="welcome-subtext">Fine Bakery & Cinnamon Rolls</div>
+    </div>
+
+    <!-- Closed Page (shown when business is closed) -->
+    <div class="closed-page" id="closedPage">
+      <div class="closed-content">
+        <div class="closed-icon">⏰</div>
+        <h1 class="closed-title">We're Closed</h1>
+        <p class="closed-text">
+          Thank you for visiting BnB Rolls! Our bakery is currently closed. We
+          open daily at 8:00 AM and close at 4:00 PM. Please come back during
+          our business hours to place your order.
+        </p>
+        <div class="closed-countdown" id="closedCountdown">
+          <div class="closed-countdown-item">
+            <span class="closed-countdown-value" id="closedHours">00</span>
+            <span class="closed-countdown-label">Hours</span>
+          </div>
+          <div class="closed-countdown-item">
+            <span class="closed-countdown-value" id="closedMinutes">00</span>
+            <span class="closed-countdown-label">Minutes</span>
+          </div>
+          <div class="closed-countdown-item">
+            <span class="closed-countdown-value" id="closedSeconds">00</span>
+            <span class="closed-countdown-label">Seconds</span>
+          </div>
+        </div>
+        <p class="closed-note">
+          We look forward to serving you fresh cinnamon rolls soon!
+        </p>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+      <div class="nav-brand">BnB ROLLS</div>
+      <div class="nav-links">
+        <a href="#" onclick="showPage('home')">Home</a>
+        <a href="#" onclick="showPage('menu')">Menu</a>
+      </div>
+    </nav>
+
+    <!-- Added to cart notification -->
+    <div class="added-notification" id="addedNotification">Added to cart!</div>
+
+    <!-- Fixed Cart Icon - Hidden on home page -->
+    <div class="cart-icon" id="cartIcon" onclick="showPage('cart')">
+      <span style="font-size: 1.5rem">🛒</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </div>
+
+    <!-- Home Page -->
+    <div id="home" class="page active">
+      <div class="hero">
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="floating-element"></div>
+        <div class="hero-content">
+          <div class="logo-text">BnB ROLLS</div>
+          <div class="subtitle">FINE BAKERY</div>
+          <p>
+            Indulge in our artisanal cinnamon rolls, crafted with premium
+            ingredients and baked fresh daily for that perfect moment of
+            sweetness.
+          </p>
+          <button class="btn-primary" onclick="scrollToMenu()">
+            Explore Our Menu
+          </button>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <div class="about-text">
+          <h2>Our Story</h2>
+          <p>
+            At BnB Rolls, we believe in the simple pleasure of a perfectly baked
+            cinnamon roll. Each morning, we handcraft our signature rolls using
+            traditional techniques passed down through generations.
+          </p>
+          <p>
+            Our commitment to quality ingredients and artisanal methods ensures
+            every bite is a moment of pure indulgence. From classic cinnamon to
+            innovative flavors, there's something for everyone to enjoy.
+          </p>
+          <p>
+            Founded in 2025, our bakery has grown from a small family kitchen to
+            a beloved local destination, but our passion for creating the
+            perfect roll remains unchanged.
+          </p>
+        </div>
+        <div class="about-card">
+          <div class="about-card-icon">🥐</div>
+          <h3 style="font-size: 1.8rem; color: #92400e; margin-bottom: 0.5rem">
+            Fresh Daily
+          </h3>
+          <p style="color: #b45309">Baked fresh every morning at 6 AM</p>
+        </div>
+      </div>
+
+      <div class="features">
+        <div class="features-content">
+          <h2 class="section-title">Why Choose Us</h2>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">🌾</div>
+              <h3>Premium Ingredients</h3>
+              <p>
+                Only the finest flour, butter, and spices sourced from trusted
+                local suppliers
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">👨‍🍳</div>
+              <h3>Expert Bakers</h3>
+              <p>
+                Skilled artisans with years of experience dedicated to
+                perfecting every roll
+              </p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">💝</div>
+              <h3>Made with Love</h3>
+              <p>
+                Each roll crafted with care and passion, ensuring every bite is
+                memorable
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonials">
+        <h2 class="section-title">Customer Love</h2>
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <p class="testimonial-text">
+              "The best cinnamon rolls I've ever had! Perfectly soft with just
+              the right amount of sweetness."
+            </p>
+            <p class="testimonial-author">- Sarah M.</p>
+          </div>
+          <div class="testimonial-card">
+            <p class="testimonial-text">
+              "I order from BnB Rolls every weekend. Their seasonal flavors are
+              always a delightful surprise!"
+            </p>
+            <p class="testimonial-author">- James T.</p>
+          </div>
+          <div class="testimonial-card">
+            <p class="testimonial-text">
+              "The quality is exceptional. You can taste the care that goes into
+              every single roll."
+            </p>
+            <p class="testimonial-author">- Maria L.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review Section -->
+      <div class="review-section">
+        <div class="review-container">
+          <h2 class="review-title">Share Your Experience</h2>
+          <div class="review-form" id="reviewForm">
+            <div class="form-row">
+              <label for="foodSelect">Select Food Item (Optional)</label>
+              <select class="food-select" id="foodSelect">
+                <option value="">-- Select a food item --</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label>Rate Your Experience</label>
+              <div class="star-rating" id="starRating">
+                <span class="star" data-rating="1">★</span>
+                <span class="star" data-rating="2">★</span>
+                <span class="star" data-rating="3">★</span>
+                <span class="star" data-rating="4">★</span>
+                <span class="star" data-rating="5">★</span>
+              </div>
+              <div class="rating-text" id="ratingText">Select your rating</div>
+            </div>
+
+            <div class="form-row" id="feedbackSection" style="display: none">
+              <label>What could we improve?</label>
+              <div class="feedback-options" id="feedbackOptions"></div>
+              <div class="other-feedback">
+                <textarea
+                  id="otherFeedback"
+                  placeholder="Other feedback (optional)"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <label for="reviewDescription"
+                >Review Description (Optional)</label
+              >
+              <textarea
+                id="reviewDescription"
+                placeholder="Tell us about your experience..."
+              ></textarea>
+            </div>
+
+            <button
+              class="btn-submit-review"
+              id="submitReviewBtn"
+              onclick="submitReview()"
+            >
+              Submit Review
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preorder Section -->
+      <div class="preorder-section">
+        <div class="preorder-card">
+          <h2 class="preorder-title">Preorder Now!</h2>
+          <p class="preorder-text">
+            Don't miss out on our freshly baked cinnamon rolls! Preorder now to
+            ensure your favorites are ready for pickup. Our next baking batch
+            will be ready in:
+          </p>
+          <div class="countdown" id="countdown">
+            <div class="countdown-item">
+              <span class="countdown-value" id="days">00</span>
+              <span class="countdown-label">Days</span>
+            </div>
+            <div class="countdown-item">
+              <span class="countdown-value" id="hours">00</span>
+              <span class="countdown-label">Hours</span>
+            </div>
+            <div class="countdown-item">
+              <span class="countdown-value" id="minutes">00</span>
+              <span class="countdown-label">Minutes</span>
+            </div>
+            <div class="countdown-item">
+              <span class="countdown-value" id="seconds">00</span>
+              <span class="countdown-label">Seconds</span>
+            </div>
+          </div>
+          <button class="btn-preorder" onclick="showPage('menu')">
+            Preorder Now
+          </button>
+        </div>
+      </div>
+
+      <div class="cta-section">
+        <div class="cta-content">
+          <h2 class="cta-title">Ready to Taste the Difference?</h2>
+          <p class="cta-text">
+            Visit us today or order online to experience our freshly baked
+            cinnamon rolls. Your perfect moment of sweetness awaits!
+          </p>
+          <button class="btn-secondary" onclick="scrollToMenu()">
+            Order Now
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu Page -->
+    <div id="menu" class="page">
+      <div class="menu-header">
+        <h1>Our Menu</h1>
+        <p style="color: #b45309; font-size: 1.1rem">
+          Handcrafted rolls baked fresh daily
+        </p>
+
+        <!-- Menu Categories -->
+        <div class="menu-categories">
+          <button
+            class="menu-category-btn active"
+            onclick="filterProducts('all')"
+          >
+            All Items
+          </button>
+          <button class="menu-category-btn" onclick="filterProducts('regular')">
+            Regular Orders
+          </button>
+          <button
+            class="menu-category-btn"
+            onclick="filterProducts('restaurant')"
+          >
+            Restaurant Carties
+          </button>
+        </div>
+      </div>
+      <div class="products-grid" id="productsGrid"></div>
+    </div>
+
+    <!-- Cart Page -->
+    <div id="cart" class="page">
+      <div class="cart-container">
+        <h1>Your Cart</h1>
+        <div id="cartContent"></div>
+      </div>
+    </div>
+
+    <!-- Checkout Page -->
+    <div id="checkout" class="page">
+      <div class="checkout-container">
+        <h1>Checkout</h1>
+        <div id="checkoutContent"></div>
+      </div>
+    </div>
+
+    <!-- Order Confirmation Page -->
+    <div id="confirmation" class="page">
+      <div class="cart-container">
+        <div class="confirmation-container">
+          <div class="confirmation-icon">✅</div>
+          <h2 class="confirmation-title">Order Received!</h2>
+          <p class="confirmation-text">
+            Thank you for your order! We have received your order details and
+            will get back to you shortly to confirm and arrange pickup/delivery.
+          </p>
+          <div class="confirmation-details" id="orderDetails"></div>
+          <button class="btn-continue" onclick="showPage('menu')">
+            Continue Shopping
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Success Modal -->
+    <div class="review-modal" id="reviewModal">
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeReviewModal()">×</button>
+        <div class="modal-icon">✅</div>
+        <h2 class="modal-title">Thank You!</h2>
+        <p class="modal-text">
+          Your review has been submitted successfully. We appreciate your
+          feedback!
+        </p>
+        <button class="btn-continue" onclick="closeReviewModal()">
+          Continue Browsing
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Disable right-click context menu
+      document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+        return false;
+      });
+
+      // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+      document.addEventListener("keydown", function (e) {
+        if (
+          e.key === "F12" ||
+          (e.ctrlKey && e.shiftKey && e.key === "I") ||
+          (e.ctrlKey && e.shiftKey && e.key === "J") ||
+          (e.ctrlKey && e.key === "U") ||
+          (e.ctrlKey && e.key === "u")
+        ) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // Show welcome animation
+      function showWelcomeAnimation() {
+        const welcomeAnimation = document.getElementById("welcomeAnimation");
+
+        // Check if user has seen the animation before
+        const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
+
+        if (!hasSeenWelcome) {
+          // Show animation for first-time visitors
+          setTimeout(() => {
+            welcomeAnimation.classList.add("hidden");
+            localStorage.setItem("hasSeenWelcome", "true");
+          }, 3000); // Show for 3 seconds
+        } else {
+          // Hide immediately for returning visitors
+          welcomeAnimation.classList.add("hidden");
+        }
+      }
+
+      // Business hours configuration
+      const OPEN_HOUR = 8; // 8 AM
+      const CLOSE_HOUR = 16; // 4 PM
+
+      // Check if business is open (Nigeria time)
+      function isBusinessOpen() {
+        const now = new Date();
+        // Convert to Nigeria time (UTC+1)
+        const nigeriaTime = new Date(now.getTime() + 60 * 60 * 1000); // Add 1 hour for Nigeria time
+
+        const currentHour = nigeriaTime.getHours();
+
+        // Business is open from 8 AM to 4 PM
+        return currentHour >= OPEN_HOUR && currentHour < CLOSE_HOUR;
+      }
+
+      // Get time until opening (in milliseconds)
+      function getTimeUntilOpening() {
+        const now = new Date();
+        // Convert to Nigeria time (UTC+1)
+        const nigeriaTime = new Date(now.getTime() + 60 * 60 * 1000); // Add 1 hour for Nigeria time
+
+        const currentHour = nigeriaTime.getHours();
+        const currentMinutes = nigeriaTime.getMinutes();
+        const currentSeconds = nigeriaTime.getSeconds();
+
+        let hoursUntilOpen;
+
+        if (currentHour < OPEN_HOUR) {
+          // Before opening time today
+          hoursUntilOpen = OPEN_HOUR - currentHour - 1;
+        } else {
+          // After closing time, calculate until next day opening
+          hoursUntilOpen = 24 - currentHour + OPEN_HOUR - 1;
+        }
+
+        const minutesUntilOpen = 59 - currentMinutes;
+        const secondsUntilOpen = 59 - currentSeconds;
+
+        return {
+          hours: hoursUntilOpen,
+          minutes: minutesUntilOpen,
+          seconds: secondsUntilOpen,
+        };
+      }
+
+      // Update closed page countdown
+      function updateClosedCountdown() {
+        if (!isBusinessOpen()) {
+          const timeUntilOpen = getTimeUntilOpening();
+
+          document.getElementById("closedHours").textContent =
+            timeUntilOpen.hours.toString().padStart(2, "0");
+          document.getElementById("closedMinutes").textContent =
+            timeUntilOpen.minutes.toString().padStart(2, "0");
+          document.getElementById("closedSeconds").textContent =
+            timeUntilOpen.seconds.toString().padStart(2, "0");
+        }
+      }
+
+      // Check business hours and show appropriate page
+      function checkBusinessHours() {
+        const closedPage = document.getElementById("closedPage");
+        const mainContent = document.querySelectorAll(".page, nav, .cart-icon");
+
+        if (!isBusinessOpen()) {
+          // Business is closed - show closed page
+          closedPage.classList.remove("hidden");
+          mainContent.forEach((el) => (el.style.display = "none"));
+
+          // Start countdown for closed page
+          updateClosedCountdown();
+          setInterval(updateClosedCountdown, 1000);
+        } else {
+          // Business is open - show normal content
+          closedPage.classList.add("hidden");
+          mainContent.forEach((el) => (el.style.display = ""));
+        }
+      }
+
+      // Products data with Naira prices and image URLs
+      const products = [
+        {
+          id: 1,
+          name: "Red Velvet cinnamon roll",
+          description:
+            "Our signature warm cinnamon roll with cream cheese frosting",
+          price: 2500,
+          image: "images/Red Velvet.jpg",
+          category: "regular",
+        },
+        {
+          id: 2,
+          name: "Chocolate cinnamon roll",
+          description: "Rich chocolate filled roll with chips",
+          price: 2500,
+          image: "images/Chocolate.jpg",
+          category: "regular",
+        },
+        {
+          id: 3,
+          name: "Oreos cinnamon roll",
+          description: "Cookies and cream twist with crushed oreos & frosting.",
+          price: 2800,
+          image: "images/Oreos.jpg",
+          category: "regular",
+        },
+        {
+          id: 4,
+          name: "Biscof cinnamon roll",
+          description: "crushed biscof with butter ",
+          price: 3000,
+          image: "images/Biscof.jpg",
+          category: "regular",
+        },
+        {
+          id: 5,
+          name: "Strawberry cinnamon roll",
+          description:
+            "Sweet roll topped with real strawberry glaze & fruity bits",
+          price: 3000,
+          image: "images/Strawberry.jpg",
+          category: "regular",
+        },
+        {
+          id: 6,
+          name: "Cinnamon Roll cake",
+          description:
+            "Soft,fluffy,swirled with cinnamon sugar, drizzled with sweet glaze.",
+          price: 6000,
+          image: "images/Cinnamon rolls cake.jpg",
+          category: "regular",
+        },
+        {
+          id: 7,
+          name: "Dark chocolate with chocolate toppin's",
+          description:
+            "Rich chocolate filled roll with cocoa drizzle with chocolate toppin's",
+          price: 3000,
+          image: "images/Dark chocolate with chocolate toppin's.jpg",
+          category: "regular",
+        },
+        {
+          id: 8,
+          name: "Dried fruit cinnamon",
+          description:
+            "Loaded with raisins & cranberries, finished with glaze.",
+          price: 2800,
+          image: "images/dried fruit cinnamon roll.jpg",
+          category: "regular",
+        },
+        {
+          id: 9,
+          name: "Butter croissant",
+          description: "classic croissant  with warm autumn spices",
+          price: 2000,
+          image: "images/butter croissant.jpg",
+          category: "regular",
+        },
+        {
+          id: 10,
+          name: "Chocolate croissant",
+          description: "chocolate croissant with melted chocolate fillin'",
+          price: 2300,
+          image: "images/Chocolate Croissants.webp",
+          category: "regular",
+        },
+        {
+          id: 11,
+          name: "Pecan rolls",
+          description: "crushed pecan nut with almond cream filling",
+          price: 2500,
+          image: "images/Pecan rolls.webp",
+          category: "regular",
+        },
+        {
+          id: 12,
+          name: "Party box",
+          description: "party flavor",
+          price: 25000,
+          image: "images/party box.jpg",
+          isPartyBox: true,
+          category: "regular",
+        },
+        {
+          id: 13,
+          name: "Pecan cinnamon rolls",
+          description: "Natural honey glaze with candied walnuts",
+          price: 3000,
+          image: "images/Caramel-Pecan-Cinnamon-Rolls.jpg",
+          category: "regular",
+        },
+        {
+          id: 14,
+          name: "Double Chocolate Roll",
+          description: "Rich chocolate dough with extra chocolate",
+          price: 3500,
+          image: "images/double chocolate.webp",
+          category: "regular",
+        },
+        {
+          id: 15,
+          name: "Cinnamon roll cake",
+          description: "Fresh chocolate with cheesecake filling 8 inches",
+          price: 10000,
+          image: "images/Cinnamon roll cake.jpg",
+          category: "regular",
+        },
+        {
+          id: 16,
+          name: "Classic cinnamon roll",
+          description: "Twisted dough with cinnamon sugar coating",
+          price: 2000,
+          image: "images/classic cinnamon roll.jpg",
+          category: "regular",
+        },
+        // Restaurant Carties items (same products but with special pricing)
+        {
+          id: 101,
+          name: "Red Velvet cinnamon roll (Restaurant)",
+          description:
+            "Our signature warm cinnamon roll with cream cheese frosting",
+          price: 2500, // Same as regular price
+          image: "images/Red Velvet.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 102,
+          name: "Chocolate cinnamon roll (Restaurant)",
+          description: "Rich chocolate filled roll with chips",
+          price: 2500, // Same as regular price
+          image: "images/Chocolate.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 103,
+          name: "Oreos cinnamon roll (Restaurant)",
+          description: "Cookies and cream twist with crushed oreos & frosting.",
+          price: 2800, // Same as regular price
+          image: "images/Oreos.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 104,
+          name: "Biscof cinnamon roll (Restaurant)",
+          description: "crushed biscof with butter ",
+          price: 3000, // Same as regular price
+          image: "images/Biscof.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 105,
+          name: "Strawberry cinnamon roll (Restaurant)",
+          description:
+            "Sweet roll topped with real strawberry glaze & fruity bits",
+          price: 3000, // Same as regular price
+          image: "images/Strawberry.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 106,
+          name: "Dark chocolate with chocolate toppin's (Restaurant)",
+          description:
+            "Rich chocolate filled roll with cocoa drizzle with chocolate toppin's",
+          price: 3000, // Same as regular price
+          image: "images/Dark chocolate with chocolate toppin's.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 107,
+          name: "Dried fruit cinnamon (Restaurant)",
+          description:
+            "Loaded with raisins & cranberries, finished with glaze.",
+          price: 2800, // Same as regular price
+          image: "images/dried fruit cinnamon roll.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 108,
+          name: "Butter croissant (Restaurant)",
+          description: "classic croissant  with warm autumn spices",
+          price: 2000, // Same as regular price
+          image: "images/butter croissant.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 109,
+          name: "Chocolate croissant (Restaurant)",
+          description: "chocolate croissant with melted chocolate fillin'",
+          price: 2300, // Same as regular price
+          image: "images/Chocolate Croissants.webp",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 110,
+          name: "Pecan rolls (Restaurant)",
+          description: "crushed pecan nut with almond cream filling",
+          price: 2500, // Same as regular price
+          image: "images/Pecan rolls.webp",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 111,
+          name: "Pecan cinnamon rolls (Restaurant)",
+          description: "Natural honey glaze with candied walnuts",
+          price: 3000, // Same as regular price
+          image: "images/Caramel-Pecan-Cinnamon-Rolls.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 112,
+          name: "Double Chocolate Roll (Restaurant)",
+          description: "Rich chocolate dough with extra chocolate",
+          price: 3500, // Same as regular price
+          image: "images/double chocolate.webp",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+        {
+          id: 113,
+          name: "Classic cinnamon roll (Restaurant)",
+          description: "Twisted dough with cinnamon sugar coating",
+          price: 2000, // Same as regular price
+          image: "images/classic cinnamon roll.jpg",
+          category: "restaurant",
+          isRestaurantItem: true,
+        },
+      ];
+
+      // Available flavors for party box
+      const availableFlavors = [
+        "Red Velvet",
+        "Chocolate",
+        "Oreos",
+        "Biscof",
+        "Strawberry",
+        "Pecan",
+        "Double Chocolate",
+        "Classic Cinnamon",
+      ];
+
+      // Feedback options for low ratings
+      const feedbackOptions = [
+        "Too salty",
+        "Too sugary",
+        "Not fresh",
+        "Poor texture",
+        "Small portion",
+        "Not as described",
+        "Other",
+      ];
+
+      let cart = [];
+      const DISCOUNT_PERCENTAGE = 20; // 20% discount
+      const RESTAURANT_SPECIAL_PRICE = 13000; // ₦13,000 for 10 items
+      let currentCategory = "all";
+
+      // Page navigation
+      function showPage(pageName) {
+        // Check if business is open before allowing navigation
+        if (!isBusinessOpen()) {
+          return;
+        }
+
+        document.querySelectorAll(".page").forEach((page) => {
+          page.classList.remove("active");
+        });
+        document.getElementById(pageName).classList.add("active");
+
+        // Show/hide cart icon based on current page
+        const cartIcon = document.getElementById("cartIcon");
+        if (pageName === "home") {
+          cartIcon.style.display = "none"; // Hide on home page
+        } else {
+          cartIcon.style.display = "flex"; // Show on other pages
+        }
+
+        if (pageName === "menu") {
+          renderProducts();
+          window.scrollTo(0, 0);
+        } else if (pageName === "cart") {
+          renderCart();
+        } else if (pageName === "checkout") {
+          renderCheckout();
+        }
+      }
+
+      // Filter products by category
+      function filterProducts(category) {
+        currentCategory = category;
+
+        // Update active button
+        document.querySelectorAll(".menu-category-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        renderProducts();
+      }
+
+      // Scroll to menu page and top
+      function scrollToMenu() {
+        showPage("menu");
+        window.scrollTo(0, 0);
+      }
+
+      // Format Naira price
+      function formatNaira(amount) {
+        return "₦" + amount.toLocaleString("en-NG");
+      }
+
+      // Render products
+      function renderProducts() {
+        const grid = document.getElementById("productsGrid");
+
+        // Filter products based on current category
+        let filteredProducts = products;
+        if (currentCategory === "regular") {
+          filteredProducts = products.filter((p) => p.category === "regular");
+        } else if (currentCategory === "restaurant") {
+          filteredProducts = products.filter(
+            (p) => p.category === "restaurant"
+          );
+        }
+
+        grid.innerHTML = filteredProducts
+          .map(
+            (product) => `
+                        <div class="product-card">
+                            <div class="product-image">
+                                <img src="${product.image}" alt="${
+              product.name
+            }" loading="lazy">
+                            </div>
+                            <div class="product-info">
+                                <h3>${product.name} ${
+              product.isRestaurantItem
+                ? '<span class="special-offer-badge">RESTAURANT</span>'
+                : ""
+            }</h3>
+                                <p>${product.description}</p>
+                                ${
+                                  product.isRestaurantItem
+                                    ? `
+                                <div class="offer-note">
+                                  <strong>Restaurant Carties Special:</strong> ${formatNaira(
+                                    RESTAURANT_SPECIAL_PRICE
+                                  )} for 10 items
+                                </div>
+                                `
+                                    : ""
+                                }
+                                <div class="product-footer">
+                                    <span class="product-price">${formatNaira(
+                                      product.price
+                                    )} ${
+              product.isRestaurantItem ? "each" : ""
+            }</span>
+                                    <button class="btn-add" onclick="addToCart(${
+                                      product.id
+                                    })">Add to Cart</button>
+                                </div>
+                            </div>
+                        </div>
+                    `
+          )
+          .join("");
+
+        const productCards = document.querySelectorAll(".product-card");
+        productCards.forEach((card) => {
+          card.classList.remove("visible");
+        });
+
+        animateOnScroll();
+      }
+
+      // Animate product cards on scroll
+      function animateOnScroll() {
+        const productCards = document.querySelectorAll(".product-card");
+
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add("visible");
+              }
+            });
+          },
+          {
+            threshold: 0.1,
+          }
+        );
+
+        productCards.forEach((card) => {
+          observer.observe(card);
+        });
+      }
+
+      // Show added notification
+      function showAddedNotification() {
+        const notification = document.getElementById("addedNotification");
+        notification.classList.add("show");
+        setTimeout(() => {
+          notification.classList.remove("show");
+        }, 2000);
+      }
+
+      // Add to cart
+      function addToCart(productId) {
+        // Check if business is open
+        if (!isBusinessOpen()) {
+          return;
+        }
+
+        const product = products.find((p) => p.id === productId);
+        const existingItem = cart.find((item) => item.id === productId);
+
+        if (existingItem) {
+          existingItem.quantity++;
+        } else {
+          cart.push({
+            ...product,
+            quantity: 1,
+            selectedFlavors: product.isPartyBox ? [] : null,
+          });
+        }
+
+        updateCartCount();
+        showAddedNotification();
+      }
+
+      // Update quantity
+      function updateQuantity(productId, change) {
+        const item = cart.find((item) => item.id === productId);
+        if (item) {
+          item.quantity += change;
+          if (item.quantity <= 0) {
+            removeFromCart(productId);
+          } else {
+            updateCartCount();
+            renderCart();
+          }
+        }
+      }
+
+      // Remove from cart
+      function removeFromCart(productId) {
+        cart = cart.filter((item) => item.id !== productId);
+        updateCartCount();
+        renderCart();
+      }
+
+      // Update cart count
+      function updateCartCount() {
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cartCount").textContent = count;
+      }
+
+      // Calculate total using the exact formula: price × 20 = total, total ÷ 100 = total2, price - total2 = final
+      function calculateDiscountedPrice(price) {
+        const total = price * 20;
+        const total2 = total / 100;
+        return price - total2;
+      }
+
+      // Calculate total for restaurant items (special pricing for 10 items)
+      function calculateRestaurantTotal(restaurantItems) {
+        const totalQuantity = restaurantItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+        const setsOfTen = Math.floor(totalQuantity / 10);
+        const remainingItems = totalQuantity % 10;
+
+        const totalPrice =
+          setsOfTen * RESTAURANT_SPECIAL_PRICE +
+          remainingItems * restaurantItems[0].price;
+        return totalPrice;
+      }
+
+      // Calculate total
+      function getCartTotal() {
+        const regularItems = cart.filter((item) => !item.isRestaurantItem);
+        const restaurantItems = cart.filter((item) => item.isRestaurantItem);
+
+        const regularTotal = regularItems.reduce(
+          (sum, item) => sum + item.price * item.quantity,
+          0
+        );
+        const restaurantTotal =
+          restaurantItems.length > 0
+            ? calculateRestaurantTotal(restaurantItems)
+            : 0;
+
+        return regularTotal + restaurantTotal;
+      }
+
+      // Calculate discount amount
+      function calculateDiscount() {
+        const regularItems = cart.filter((item) => !item.isRestaurantItem);
+        const totalRegularQuantity = regularItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+
+        // Apply 20% discount only if total regular quantity is 3 or more
+        if (totalRegularQuantity >= 3) {
+          const regularSubtotal = regularItems.reduce(
+            (sum, item) => sum + item.price * item.quantity,
+            0
+          );
+          const total = regularSubtotal * 20;
+          const total2 = total / 100;
+          return total2;
+        }
+        return 0;
+      }
+
+      // Calculate final total after discount
+      function getFinalTotal() {
+        const subtotal = getCartTotal();
+        const discount = calculateDiscount();
+        return subtotal - discount;
+      }
+
+      // Toggle flavor selection for party box
+      function toggleFlavor(productId, flavor) {
+        const item = cart.find((item) => item.id === productId);
+        if (item && item.isPartyBox) {
+          const index = item.selectedFlavors.indexOf(flavor);
+          if (index > -1) {
+            item.selectedFlavors.splice(index, 1);
+          } else {
+            item.selectedFlavors.push(flavor);
+          }
+          renderCart();
+        }
+      }
+
+      // Render cart
+      function renderCart() {
+        const cartContent = document.getElementById("cartContent");
+
+        if (cart.length === 0) {
+          cartContent.innerHTML = `
+                    <div class="cart-empty">
+                        <div class="cart-empty-icon">🛒</div>
+                        <p style="font-size: 1.25rem; color: #b45309; margin-bottom: 1.5rem;">Your cart is empty</p>
+                        <button class="btn-primary" onclick="showPage('menu')">Browse Menu</button>
+                    </div>
+                `;
+        } else {
+          const regularItems = cart.filter((item) => !item.isRestaurantItem);
+          const restaurantItems = cart.filter((item) => item.isRestaurantItem);
+          const totalRegularQuantity = regularItems.reduce(
+            (sum, item) => sum + item.quantity,
+            0
+          );
+          const totalRestaurantQuantity = restaurantItems.reduce(
+            (sum, item) => sum + item.quantity,
+            0
+          );
+
+          const finalTotal = getFinalTotal();
+
+          cartContent.innerHTML = `
+                    <div class="cart-items">
+                        ${cart
+                          .map((item) => {
+                            let itemTotal, itemFinalPrice;
+
+                            if (item.isRestaurantItem) {
+                              // For restaurant items, calculate based on special pricing
+                              const restaurantSubtotal =
+                                calculateRestaurantTotal([item]);
+                              itemTotal = restaurantSubtotal;
+                              itemFinalPrice = restaurantSubtotal;
+                            } else {
+                              // For regular items
+                              itemTotal = item.price * item.quantity;
+                              itemFinalPrice =
+                                totalRegularQuantity >= 3
+                                  ? calculateDiscountedPrice(itemTotal)
+                                  : itemTotal;
+                            }
+
+                            return `
+                                        <div class="cart-item">
+                                            <div class="cart-item-image">
+                                                <img src="${item.image}" alt="${
+                              item.name
+                            }">
+                                            </div>
+                                            <div class="cart-item-details">
+                                                <h3>${item.name} ${
+                              item.isRestaurantItem
+                                ? '<span class="special-offer-badge">RESTAURANT</span>'
+                                : ""
+                            }</h3>
+                                                <div class="price-container">
+                                                    ${
+                                                      !item.isRestaurantItem &&
+                                                      totalRegularQuantity >= 3
+                                                        ? `
+                                                            <span class="original-price">${formatNaira(
+                                                              itemTotal
+                                                            )}</span>
+                                                            <span class="discounted-price">${formatNaira(
+                                                              itemFinalPrice
+                                                            )} <span class="discount-badge">${DISCOUNT_PERCENTAGE}% OFF</span></span>
+                                                        `
+                                                        : `
+                                                            <span class="normal-price">${formatNaira(
+                                                              itemFinalPrice
+                                                            )}</span>
+                                                        `
+                                                    }
+                                                </div>
+                                                ${
+                                                  item.isRestaurantItem &&
+                                                  totalRestaurantQuantity > 0
+                                                    ? `
+                                                        <div class="offer-note">
+                                                          <strong>Restaurant Carties Pricing:</strong> ${formatNaira(
+                                                            RESTAURANT_SPECIAL_PRICE
+                                                          )} for 10 items (${formatNaira(
+                                                        item.price
+                                                      )} each)
+                                                        </div>
+                                                    `
+                                                    : ""
+                                                }
+                                                ${
+                                                  item.isPartyBox
+                                                    ? `
+                                                        <div class="flavor-selection">
+                                                            <h4>Select Flavors (Choose up to 4):</h4>
+                                                            <div class="flavor-options">
+                                                                ${availableFlavors
+                                                                  .map(
+                                                                    (
+                                                                      flavor
+                                                                    ) => `
+                                                                        <div class="flavor-option">
+                                                                            <input type="checkbox" id="flavor-${
+                                                                              item.id
+                                                                            }-${flavor}" 
+                                                                                   onchange="toggleFlavor(${
+                                                                                     item.id
+                                                                                   }, '${flavor}')"
+                                                                                   ${
+                                                                                     item.selectedFlavors &&
+                                                                                     item.selectedFlavors.includes(
+                                                                                       flavor
+                                                                                     )
+                                                                                       ? "checked"
+                                                                                       : ""
+                                                                                   }>
+                                                                            <label for="flavor-${
+                                                                              item.id
+                                                                            }-${flavor}">${flavor}</label>
+                                                                        </div>
+                                                                    `
+                                                                  )
+                                                                  .join("")}
+                                                            </div>
+                                                            ${
+                                                              item.selectedFlavors &&
+                                                              item
+                                                                .selectedFlavors
+                                                                .length > 0
+                                                                ? `<p><small>Selected: ${item.selectedFlavors.join(
+                                                                    ", "
+                                                                  )}</small></p>`
+                                                                : ""
+                                                            }
+                                                        </div>
+                                                    `
+                                                    : ""
+                                                }
+                                            </div>
+                                            <div class="cart-item-controls">
+                                                <div class="quantity-controls">
+                                                    <button class="btn-qty" onclick="updateQuantity(${
+                                                      item.id
+                                                    }, -1)">−</button>
+                                                    <span class="quantity">${
+                                                      item.quantity
+                                                    }</span>
+                                                    <button class="btn-qty" onclick="updateQuantity(${
+                                                      item.id
+                                                    }, 1)">+</button>
+                                                </div>
+                                                <button class="btn-remove" onclick="removeFromCart(${
+                                                  item.id
+                                                })">Remove</button>
+                                            </div>
+                                        </div>
+                                    `;
+                          })
+                          .join("")}
+                        <div class="cart-total">
+                            <div>
+                                <h2>Total: ${formatNaira(finalTotal)}</h2>
+                                ${
+                                  totalRegularQuantity < 3 &&
+                                  totalRegularQuantity > 0
+                                    ? `<p style="color: #b45309; margin: 0.5rem 0;">Add ${
+                                        3 - totalRegularQuantity
+                                      } more regular item${
+                                        3 - totalRegularQuantity > 1 ? "s" : ""
+                                      } to get ${DISCOUNT_PERCENTAGE}% discount!</p>`
+                                    : ""
+                                }
+                                ${
+                                  totalRestaurantQuantity > 0
+                                    ? `<p style="color: #78350f; margin: 0.5rem 0;"><strong>Restaurant Carties:</strong> ${formatNaira(
+                                        RESTAURANT_SPECIAL_PRICE
+                                      )} for 10 items (${formatNaira(
+                                        restaurantItems[0].price
+                                      )} each)</p>`
+                                    : ""
+                                }
+                            </div>
+                            <button class="btn-checkout" onclick="showPage('checkout')">Checkout</button>
+                        </div>
+                    </div>
+                `;
+        }
+      }
+
+      // Render checkout page
+      function renderCheckout() {
+        const checkoutContent = document.getElementById("checkoutContent");
+        const finalTotal = getFinalTotal();
+        const regularItems = cart.filter((item) => !item.isRestaurantItem);
+        const restaurantItems = cart.filter((item) => item.isRestaurantItem);
+        const totalRegularQuantity = regularItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+        const totalRestaurantQuantity = restaurantItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+
+        checkoutContent.innerHTML = `
+                <div class="contact-form">
+                    <form id="orderForm">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                maxlength="21"
+                                required
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="deliveryTime">Preferred Delivery Time</label>
+                            <input
+                                type="time"
+                                id="deliveryTime"
+                                name="deliveryTime"
+                                required
+                            />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address">Delivery Address (if applicable)</label>
+                            <textarea id="address" name="address"> </textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="instructions">Additional Instructions</label>
+                            <textarea id="instructions" name="instructions"></textarea>
+                        </div>
+
+                        <div class="cart-total">
+                            <div>
+                                <h2>Total: ${formatNaira(finalTotal)}</h2>
+                                ${
+                                  totalRegularQuantity < 3 &&
+                                  totalRegularQuantity > 0
+                                    ? `<p style="color: #b45309; margin: 0.5rem 0;">Add ${
+                                        3 - totalRegularQuantity
+                                      } more regular item${
+                                        3 - totalRegularQuantity > 1 ? "s" : ""
+                                      } to get ${DISCOUNT_PERCENTAGE}% discount!</p>`
+                                    : ""
+                                }
+                                ${
+                                  totalRestaurantQuantity > 0
+                                    ? `<p style="color: #78350f; margin: 0.5rem 0;"><strong>Restaurant Carties:</strong> ${formatNaira(
+                                        RESTAURANT_SPECIAL_PRICE
+                                      )} for 10 items (${formatNaira(
+                                        restaurantItems[0].price
+                                      )} each)</p>`
+                                    : ""
+                                }
+                            </div>
+                            <button type="button" class="btn-checkout" onclick="placeOrder()">
+                                Place Order
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            `;
+      }
+
+      // Place order function
+      function placeOrder() {
+        // Check if business is open
+        if (!isBusinessOpen()) {
+          alert(
+            "Sorry, we are currently closed. Our business hours are 8 AM to 4 PM Nigeria time."
+          );
+          return;
+        }
+
+        // Get form data
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+        const deliveryTime = document.getElementById("deliveryTime").value;
+        const address = document.getElementById("address").value;
+        const instructions = document.getElementById("instructions").value;
+
+        // Validate form
+        if (!name || !email || !phone) {
+          alert("Please fill in all required fields");
+          return;
+        }
+
+        if (name.length > 21) {
+          alert("Name must be 21 characters or less");
+          return;
+        }
+
+        // Prepare order details for email
+        const orderDetails = formatOrderForEmail(
+          name,
+          email,
+          phone,
+          deliveryTime,
+          address,
+          instructions
+        );
+
+        // Send email using FormSubmit
+        sendEmail(
+          orderDetails,
+          name,
+          email,
+          phone,
+          deliveryTime,
+          address,
+          instructions
+        );
+
+        // Show confirmation page with order details
+        showOrderConfirmation(
+          name,
+          email,
+          phone,
+          deliveryTime,
+          address,
+          instructions
+        );
+      }
+
+      // Format order details for email
+      function formatOrderForEmail(
+        name,
+        email,
+        phone,
+        deliveryTime,
+        address,
+        instructions
+      ) {
+        let emailContent = "NEW ORDER FROM BNB ROLLS\n\n";
+        emailContent += `Customer: ${name}\n`;
+        emailContent += `Email: ${email}\n`;
+        emailContent += `Phone: ${phone}\n`;
+        emailContent += `Preferred Delivery Time: ${
+          deliveryTime || "Not specified"
+        }\n`;
+        emailContent += `Address: ${address || "Not provided"}\n`;
+        emailContent += `Instructions: ${instructions || "None"}\n\n`;
+        emailContent += "ORDER DETAILS:\n\n";
+
+        const regularItems = cart.filter((item) => !item.isRestaurantItem);
+        const restaurantItems = cart.filter((item) => item.isRestaurantItem);
+        const totalRegularQuantity = regularItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+        const hasDiscount = totalRegularQuantity >= 3;
+
+        // Regular items
+        if (regularItems.length > 0) {
+          emailContent += "REGULAR ITEMS:\n";
+          regularItems.forEach((item) => {
+            const itemTotal = item.price * item.quantity;
+            const itemFinalPrice = hasDiscount
+              ? calculateDiscountedPrice(itemTotal)
+              : itemTotal;
+
+            emailContent += `- ${item.name}\n`;
+            emailContent += `  Quantity: ${item.quantity}\n`;
+            if (item.isPartyBox && item.selectedFlavors.length > 0) {
+              emailContent += `  Selected Flavors: ${item.selectedFlavors.join(
+                ", "
+              )}\n`;
+            }
+            emailContent += `  Price: ${formatNaira(item.price)} each\n`;
+            if (hasDiscount) {
+              emailContent += `  Original Price: ${formatNaira(itemTotal)}\n`;
+              emailContent += `  Discounted Price: ${formatNaira(
+                itemFinalPrice
+              )}\n`;
+            } else {
+              emailContent += `  Subtotal: ${formatNaira(itemTotal)}\n`;
+            }
+            emailContent += `\n`;
+          });
+        }
+
+        // Restaurant items
+        if (restaurantItems.length > 0) {
+          emailContent += "RESTAURANT CARTIES ITEMS (SPECIAL PRICING):\n";
+          emailContent += `  Special Offer: ${formatNaira(
+            RESTAURANT_SPECIAL_PRICE
+          )} for 10 items\n\n`;
+          restaurantItems.forEach((item) => {
+            const itemTotal = calculateRestaurantTotal([item]);
+
+            emailContent += `- ${item.name}\n`;
+            emailContent += `  Quantity: ${item.quantity}\n`;
+            emailContent += `  Price: ${formatNaira(item.price)} each\n`;
+            emailContent += `  Subtotal: ${formatNaira(itemTotal)}\n\n`;
+          });
+        }
+
+        const finalTotal = getFinalTotal();
+
+        emailContent += `FINAL TOTAL: ${formatNaira(finalTotal)}\n`;
+        emailContent += `Order Date: ${new Date().toLocaleString()}\n`;
+
+        return emailContent;
+      }
+
+      // Send email using FormSubmit
+      function sendEmail(
+        orderDetails,
+        name,
+        email,
+        phone,
+        deliveryTime,
+        address,
+        instructions
+      ) {
+        const formData = new FormData();
+        formData.append("_subject", "New Order from BnB Rolls");
+        formData.append("_template", "table");
+        formData.append("_captcha", "false");
+        formData.append("name", name);
+        formData.append("email", email);
+        formData.append("phone", phone);
+        formData.append("deliveryTime", deliveryTime || "Not specified");
+        formData.append("address", address || "Not provided");
+        formData.append("instructions", instructions || "None");
+        formData.append("order_details", orderDetails);
+
+        fetch("https://formsubmit.co/ajax/Brownnbeige001@gmail.com", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => console.log("Email sent successfully"))
+          .catch((error) => console.error("Error sending email:", error));
+      }
+
+      // Show order confirmation page
+      function showOrderConfirmation(
+        name,
+        email,
+        phone,
+        deliveryTime,
+        address,
+        instructions
+      ) {
+        const orderDetailsElement = document.getElementById("orderDetails");
+
+        const regularItems = cart.filter((item) => !item.isRestaurantItem);
+        const restaurantItems = cart.filter((item) => item.isRestaurantItem);
+        const totalRegularQuantity = regularItems.reduce(
+          (sum, item) => sum + item.quantity,
+          0
+        );
+        const hasDiscount = totalRegularQuantity >= 3;
+
+        let itemsHtml = "";
+
+        // Regular items
+        if (regularItems.length > 0) {
+          itemsHtml += "<h4>Regular Items:</h4>";
+          regularItems.forEach((item) => {
+            const itemTotal = item.price * item.quantity;
+            const itemFinalPrice = hasDiscount
+              ? calculateDiscountedPrice(itemTotal)
+              : itemTotal;
+
+            itemsHtml += `
+                            <p><strong>${item.name}</strong> - ${formatNaira(
+              item.price
+            )} × ${item.quantity} = ${formatNaira(itemFinalPrice)}</p>
+                            ${
+                              hasDiscount
+                                ? `<p><em>Original: ${formatNaira(
+                                    itemTotal
+                                  )} | Discount: -${formatNaira(
+                                    itemTotal - itemFinalPrice
+                                  )}</em></p>`
+                                : ""
+                            }
+                            ${
+                              item.isPartyBox && item.selectedFlavors.length > 0
+                                ? `<p><em>Selected Flavors: ${item.selectedFlavors.join(
+                                    ", "
+                                  )}</em></p>`
+                                : ""
+                            }
+                        `;
+          });
+        }
+
+        // Restaurant items
+        if (restaurantItems.length > 0) {
+          itemsHtml += "<h4>Restaurant Carties Items (Special Pricing):</h4>";
+          itemsHtml += `<p><em>Special Offer: ${formatNaira(
+            RESTAURANT_SPECIAL_PRICE
+          )} for 10 items</em></p>`;
+          restaurantItems.forEach((item) => {
+            const itemTotal = calculateRestaurantTotal([item]);
+
+            itemsHtml += `
+                            <p><strong>${item.name}</strong> - ${formatNaira(
+              item.price
+            )} × ${item.quantity} = ${formatNaira(itemTotal)}</p>
+                        `;
+          });
+        }
+
+        const finalTotal = getFinalTotal();
+
+        orderDetailsElement.innerHTML = `
+                <h3>Order Summary</h3>
+                ${itemsHtml}
+                <p><strong>Total: ${formatNaira(finalTotal)}</strong></p>
+                <p><strong>Customer Details:</strong></p>
+                <p>Name: ${name}</p>
+                <p>Email: ${email}</p>
+                <p>Phone: ${phone}</p>
+                <p>Preferred Delivery Time: ${
+                  deliveryTime || "Not specified"
+                }</p>
+                <p>Address: ${address || "Not provided"}</p>
+                <p>Instructions: ${instructions || "None"}</p>
+                <p>Order placed: ${new Date().toLocaleString()}</p>
+            `;
+
+        // Reset cart
+        cart = [];
+        updateCartCount();
+
+        showPage("confirmation");
+      }
+
+      // Preorder countdown timer
+      function startCountdown() {
+        // Set the target date (next day at 6 AM)
+        const now = new Date();
+        const target = new Date();
+        target.setDate(now.getDate() + 1);
+        target.setHours(6, 0, 0, 0);
+
+        function updateCountdown() {
+          const now = new Date();
+          const diff = target - now;
+
+          if (diff <= 0) {
+            // Reset for next day
+            target.setDate(target.getDate() + 1);
+            return;
+          }
+
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const hours = Math.floor(
+            (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+          );
+          const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+          document.getElementById("days").textContent = days
+            .toString()
+            .padStart(2, "0");
+          document.getElementById("hours").textContent = hours
+            .toString()
+            .padStart(2, "0");
+          document.getElementById("minutes").textContent = minutes
+            .toString()
+            .padStart(2, "0");
+          document.getElementById("seconds").textContent = seconds
+            .toString()
+            .padStart(2, "0");
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+
+      // Initialize review system
+      function initReviewSystem() {
+        // Populate food select dropdown
+        const foodSelect = document.getElementById("foodSelect");
+        products.forEach((product) => {
+          const option = document.createElement("option");
+          option.value = product.id;
+          option.textContent = product.name;
+          foodSelect.appendChild(option);
+        });
+
+        // Set up star rating
+        const stars = document.querySelectorAll(".star");
+        let currentRating = 0;
+
+        stars.forEach((star) => {
+          star.addEventListener("click", function () {
+            const rating = parseInt(this.getAttribute("data-rating"));
+            currentRating = rating;
+
+            // Update stars appearance
+            stars.forEach((s) => {
+              if (parseInt(s.getAttribute("data-rating")) <= rating) {
+                s.classList.add("active");
+              } else {
+                s.classList.remove("active");
+              }
+            });
+
+            // Update rating text
+            const ratingText = document.getElementById("ratingText");
+            ratingText.textContent = `${rating} star${rating > 1 ? "s" : ""}`;
+
+            // Show/hide feedback section based on rating
+            const feedbackSection = document.getElementById("feedbackSection");
+            if (rating <= 2) {
+              feedbackSection.style.display = "block";
+              populateFeedbackOptions();
+            } else {
+              feedbackSection.style.display = "none";
+            }
+          });
+        });
+      }
+
+      // Populate feedback options
+      function populateFeedbackOptions() {
+        const feedbackOptionsContainer =
+          document.getElementById("feedbackOptions");
+        feedbackOptionsContainer.innerHTML = "";
+
+        feedbackOptions.forEach((option) => {
+          const optionDiv = document.createElement("div");
+          optionDiv.className = "feedback-option";
+
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.id = `feedback-${option}`;
+          input.value = option;
+
+          const label = document.createElement("label");
+          label.htmlFor = `feedback-${option}`;
+          label.textContent = option;
+
+          optionDiv.appendChild(input);
+          optionDiv.appendChild(label);
+          feedbackOptionsContainer.appendChild(optionDiv);
+        });
+      }
+
+      // Submit review
+      function submitReview() {
+        const foodSelect = document.getElementById("foodSelect");
+        const selectedFood = foodSelect.value;
+        const foodName = selectedFood
+          ? products.find((p) => p.id == selectedFood).name
+          : "Not specified";
+
+        const stars = document.querySelectorAll(".star.active");
+        const rating = stars.length;
+
+        let feedback = [];
+        if (rating <= 2) {
+          const checkboxes = document.querySelectorAll(
+            "#feedbackOptions input:checked"
+          );
+          checkboxes.forEach((checkbox) => {
+            feedback.push(checkbox.value);
+          });
+
+          const otherFeedback = document.getElementById("otherFeedback").value;
+          if (otherFeedback) {
+            feedback.push(`Other: ${otherFeedback}`);
+          }
+        }
+
+        const description = document.getElementById("reviewDescription").value;
+
+        // Prepare review data
+        const reviewData = {
+          foodItem: foodName,
+          rating: rating,
+          feedback: feedback,
+          description: description,
+          date: new Date().toLocaleString(),
+        };
+
+        // Send review to email
+        sendReviewEmail(reviewData);
+
+        // Show success modal
+        document.getElementById("reviewModal").classList.add("active");
+
+        // Reset form
+        document.getElementById("reviewForm").reset();
+        document.querySelectorAll(".star").forEach((star) => {
+          star.classList.remove("active");
+        });
+        document.getElementById("ratingText").textContent =
+          "Select your rating";
+        document.getElementById("feedbackSection").style.display = "none";
+      }
+
+      // Send review to email
+      function sendReviewEmail(reviewData) {
+        const formData = new FormData();
+        formData.append("_subject", "New Customer Review - BnB Rolls");
+        formData.append("_template", "table");
+        formData.append("_captcha", "false");
+        formData.append("food_item", reviewData.foodItem);
+        formData.append("rating", reviewData.rating);
+        formData.append("feedback", reviewData.feedback.join(", "));
+        formData.append("description", reviewData.description);
+        formData.append("date", reviewData.date);
+
+        // Format review content for email
+        let reviewContent = "NEW CUSTOMER REVIEW\n\n";
+        reviewContent += `Food Item: ${reviewData.foodItem}\n`;
+        reviewContent += `Rating: ${reviewData.rating} star${
+          reviewData.rating > 1 ? "s" : ""
+        }\n`;
+        reviewContent += `Feedback: ${
+          reviewData.feedback.length > 0
+            ? reviewData.feedback.join(", ")
+            : "None"
+        }\n`;
+        reviewContent += `Description: ${reviewData.description || "None"}\n`;
+        reviewContent += `Date: ${reviewData.date}\n`;
+
+        formData.append("review_details", reviewContent);
+
+        fetch("https://formsubmit.co/ajax/Brownnbeige001@gmail.com", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => response.json())
+          .then((data) => console.log("Review email sent successfully"))
+          .catch((error) =>
+            console.error("Error sending review email:", error)
+          );
+      }
+
+      // Close review modal
+      function closeReviewModal() {
+        document.getElementById("reviewModal").classList.remove("active");
+      }
+
+      // Initialize
+      showWelcomeAnimation(); // Show welcome animation first
+      checkBusinessHours(); // Check business hours
+      renderProducts();
+      startCountdown();
+      initReviewSystem();
+    </script>
+  </body>
+</html>
